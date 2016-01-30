@@ -28,3 +28,8 @@ jackson-json-schema-plugin.iml
 .idea
 *~
 *.iml
+/.project
+/.settings
+.classpath
+.project
+.settings

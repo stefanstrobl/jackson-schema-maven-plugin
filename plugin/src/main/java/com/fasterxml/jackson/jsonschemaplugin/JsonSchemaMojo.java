@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.jsonschemaplugin;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jsonschemaplugin.api.JsonSchemaObjectMapperFactory;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
@@ -34,8 +35,8 @@ public class JsonSchemaMojo extends AbstractMojo {
     /**
      * Location of the result schema.
      */
-    @Parameter(defaultValue = "${project.build.directory}/schema.json", property = "schema")
-    File outputSchema;
+    @Parameter(defaultValue = "${project.build.directory}", property = "schemaDirectory")
+    File outputDirectory;
 
     /**
      * Name a class that implements {@link com.fasterxml.jackson.jsonschemaplugin.api.JsonSchemaObjectMapperFactory}.
@@ -75,21 +76,31 @@ public class JsonSchemaMojo extends AbstractMojo {
         }
 
         ObjectMapper m = getObjectMapper(compileClassLoader);
-        SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();
+
         try {
-            for (Class<?> clazz : getClassesToProcess(compileClassLoader)) {
-                m.acceptJsonFormatVisitor(m.constructType(clazz), visitor);
-            }
-        } catch (IOException e) {
-            throw new MojoFailureException("Failed to construct compile classpath class loader.", e);
+        	
+	        for (Class<?> clazz : getClassesToProcess(compileClassLoader)) {
+	
+	        	JsonSchema jsonSchema = null;
+            	SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();
+                try {
+					m.acceptJsonFormatVisitor(m.constructType(clazz), visitor);
+				} catch (JsonMappingException e1) {
+					throw new MojoFailureException("Failed to process class.", e1);
+				}
+                jsonSchema = visitor.finalSchema();            
+
+	
+	            try {
+	                m.writerWithDefaultPrettyPrinter().writeValue(new File(outputDirectory.getName() + System.getProperty("file.separator") + clazz.getName() + "-schema.json"), jsonSchema);
+	            } catch (IOException e) {
+	                throw new MojoExecutionException("Failed to write result schema.", e);
+	            }
+	        }
         } catch (DependencyResolutionRequiredException e) {
             throw new MojoFailureException("Failed to resolve dependencies.", e);
-        }
-        JsonSchema jsonSchema = visitor.finalSchema();
-        try {
-            m.writerWithDefaultPrettyPrinter().writeValue(outputSchema, jsonSchema);
         } catch (IOException e) {
-            throw new MojoExecutionException("Failed to write result schema.", e);
+            throw new MojoFailureException("Failed to construct compile classpath class loader.", e);
         }
     }
 
