@@ -35,7 +35,7 @@ public class JsonSchemaMojo extends AbstractMojo {
     /**
      * Location of the result schema.
      */
-    @Parameter(defaultValue = "${project.build.directory}", property = "schemaDirectory")
+    @Parameter(defaultValue = "${project.build.directory}")
     File outputDirectory;
 
     /**
@@ -90,9 +90,13 @@ public class JsonSchemaMojo extends AbstractMojo {
 				}
                 jsonSchema = visitor.finalSchema();            
 
-	
 	            try {
-	                m.writerWithDefaultPrettyPrinter().writeValue(new File(outputDirectory.getName() + System.getProperty("file.separator") + clazz.getName() + "-schema.json"), jsonSchema);
+	            	if (!outputDirectory.exists()) {
+	            		outputDirectory.mkdirs();
+	            	}
+	            	File file = new File(outputDirectory.getAbsolutePath() + System.getProperty("file.separator") + clazz.getName() + "-schema.json");
+	                m.writerWithDefaultPrettyPrinter().writeValue(file, jsonSchema);
+	                
 	            } catch (IOException e) {
 	                throw new MojoExecutionException("Failed to write result schema.", e);
 	            }
