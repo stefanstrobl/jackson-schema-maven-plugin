@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.jsomnschemaplugin;
+package com.fasterxml.jackson.jsonschemaplugin;
 
 import org.codehaus.plexus.util.SelectorUtils;
 import org.junit.Test;
