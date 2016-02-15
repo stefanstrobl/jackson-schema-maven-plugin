@@ -1,12 +1,13 @@
 package com.fasterxml.jackson.jsonschemaplugin;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jsonschemaplugin.api.JsonSchemaObjectMapperFactory;
-import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
-import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper;
-import com.google.common.collect.Lists;
-import com.google.common.reflect.ClassPath;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -18,13 +19,14 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.SelectorUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jsonschemaplugin.api.JsonSchemaObjectMapperFactory;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
+import com.fasterxml.jackson.module.jsonSchema.attributes.JsonSchemaFactoryWrapper;
+import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper;
+import com.google.common.collect.Lists;
+import com.google.common.reflect.ClassPath;
 
 /**
  * Json Schema Generator.
@@ -82,7 +84,7 @@ public class JsonSchemaMojo extends AbstractMojo {
 	        for (Class<?> clazz : getClassesToProcess(compileClassLoader)) {
 	
 	        	JsonSchema jsonSchema = null;
-            	SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();
+            	SchemaFactoryWrapper visitor = new JsonSchemaFactoryWrapper();
                 try {
 					m.acceptJsonFormatVisitor(m.constructType(clazz), visitor);
 				} catch (JsonMappingException e1) {
