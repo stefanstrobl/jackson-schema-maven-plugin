@@ -21,6 +21,7 @@ import org.codehaus.plexus.util.SelectorUtils;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jsonschemaplugin.api.JsonSchemaObjectMapperFactory;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.attributes.JsonSchemaFactoryWrapper;
@@ -78,6 +79,7 @@ public class JsonSchemaMojo extends AbstractMojo {
         }
 
         ObjectMapper m = getObjectMapper(compileClassLoader);
+        m.registerModule(new JavaTimeModule());
 
         try {
         	
