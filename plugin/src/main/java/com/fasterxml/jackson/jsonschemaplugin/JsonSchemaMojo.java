@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jsonschemaplugin.api.JsonSchemaObjectMapperFactory;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
-import com.fasterxml.jackson.module.jsonSchema.attributes.JsonSchemaFactoryWrapper;
 import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
@@ -88,7 +87,7 @@ public class JsonSchemaMojo extends AbstractMojo {
 	        for (Class<?> clazz : getClassesToProcess(compileClassLoader)) {
 	
 	        	JsonSchema jsonSchema = null;
-            	SchemaFactoryWrapper visitor = new JsonSchemaFactoryWrapper();
+            	SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();
                 try {
 					m.acceptJsonFormatVisitor(m.constructType(clazz), visitor);
 				} catch (JsonMappingException e1) {
